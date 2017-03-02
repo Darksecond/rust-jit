@@ -9,7 +9,7 @@ pub struct Backend {
 impl Backend {
     pub fn new() -> Backend {
         Backend {
-            mem: Memory::new(1)
+            mem: Memory::new(1) //TODO Possibly allocate more pages
         }
     }
 
@@ -46,6 +46,7 @@ impl Backend {
         self.mem.push_u8(0xc3);
     }
 
+    //TODO Add debug feature to add runtime 16-byte stack alignment checks
     pub fn call(&mut self, dst: isize) {
         let src = self.mem.absolute_offset() + 5;
         let rel = dst - src;
@@ -63,6 +64,22 @@ impl Backend {
     pub fn push_rax(&mut self) {
         self.mem.push_u8(0x50);
     }
+
+    // sub <u8> from rsp
+    pub fn sub_rsp_u8(&mut self, value: u8) {
+        self.mem.push_u8(0x48);
+        self.mem.push_u8(0x83);
+        self.mem.push_u8(0xec);
+        self.mem.push_u8(value);
+    }
+
+    // add <u8> to rsp
+    pub fn add_rsp_u8(&mut self, value: u8) {
+        self.mem.push_u8(0x48);
+        self.mem.push_u8(0x83);
+        self.mem.push_u8(0xc4);
+        self.mem.push_u8(value);
+    }
     
     //Move double from [rsp] to xmm0
     //movsd [rsp] -> xmm0
@@ -72,6 +89,21 @@ impl Backend {
         self.mem.push_u8(0x10);
         self.mem.push_u8(0x04);
         self.mem.push_u8(0x24);
+    }
+
+    pub fn movsd_xmm0_ptr_rdi(&mut self) {
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x07);
+    }
+
+    pub fn movsd_xmm0_ptr_rdi_offset_u8(&mut self, value: u8) {
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x47);
+        self.mem.push_u8(value);
     }
     
     //mov rsp -> rbp

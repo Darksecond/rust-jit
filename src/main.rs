@@ -10,17 +10,13 @@ extern "C" fn test(a: u64, b: f64) -> u64{
 
 //TODO Frontend, Bytecode
 //TODO Context, Variables
-//TODO Figure out floating point (xmm0 onwards using SSE it seems)
 fn main() {
     let mut backend = jit::Backend::new();
 
     backend.push_rbp();
     backend.mov_rsp_rbp();
 
-    backend.mov_rax_u64(0x3ff0000000000006);
-    backend.push_rax();
-    backend.movsd_xmm0_ptr_rsp();
-    backend.push_rax(); // hack to align stack to 16-bytes
+    backend.movsd_xmm0_ptr_rdi_offset_u8(2*8);
 
     backend.mov_rdi_u32(14);
     backend.call(test as isize);
@@ -33,6 +29,11 @@ fn main() {
     let jit = backend.mem();
     println!("Mem, {:?}", jit);
 
-    let value = jit.execute();
+    let vars: *mut f64 = unsafe { std::mem::transmute(libc::malloc(32*8)) };
+    unsafe {*vars.offset(0) = 1.1; }
+    unsafe {*vars.offset(1) = 2.2; }
+    unsafe {*vars.offset(2) = 3.3; }
+    let value = jit.execute(vars);
+    unsafe { libc::free(std::mem::transmute(vars)) }
     println!("Value, {:?}", value);
 }

@@ -10,6 +10,7 @@ pub struct Memory {
     mem: *mut u8
 }
 
+//TODO Disallow pushing beyond it's size
 #[cfg(unix)]
 impl Memory {
     pub fn new(pages: u32) -> Memory {
@@ -68,12 +69,13 @@ impl Memory {
 
     //TODO Better params and return value, obviously
     //TODO This should not work when unprotected
-    pub fn execute(&self) -> i64 {
-        self.to_fn()()
+    pub fn execute(&self, vars: *mut f64) -> i64 {
+        self.to_fn()(vars)
     }
 
     //TODO Better params and return value, obviously
-    fn to_fn(&self) -> (extern "C" fn() -> i64) {
+    //first param in rdi, second param in rsi
+    fn to_fn(&self) -> (extern "C" fn(*mut f64) -> i64) {
         unsafe {
             mem::transmute(self.mem)
         }
