@@ -26,7 +26,7 @@ fn main() {
     backend.ret();
 
     println!("Backend, {:?}", backend);
-    let jit = backend.mem();
+    let jit = backend.to_mem();
     println!("Mem, {:?}", jit);
 
     let vars: *mut f64 = unsafe { std::mem::transmute(libc::malloc(32*8)) };
