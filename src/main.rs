@@ -3,8 +3,8 @@ extern crate libc;
 mod jit;
 
 // This should probably be sysv64
-extern "C" fn test(a: u64, b: f64) -> u64{
-    println!("Hello, World! {:?}", b);
+extern "C" fn test(a: u64, b: f64, c: f64) -> u64{
+    println!("Hello, World! {:?} {:?}", b, c);
     a+5
 }
 
@@ -16,7 +16,9 @@ fn main() {
     backend.push_rbp();
     backend.mov_rsp_rbp();
 
-    backend.movsd_xmm0_ptr_rdi_offset_u8(2*8);
+    // RDI is first parameter
+    backend.movsd_xmm0_ptr_rdi_offset_u8(1*8);
+    backend.movsd_xmm1_ptr_rdi_offset_u8(2*8);
 
     backend.mov_rdi_u32(14);
     backend.call(test as isize);

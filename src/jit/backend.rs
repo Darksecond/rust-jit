@@ -131,6 +131,16 @@ impl Backend {
         self.mem.push_u8(value);
         offset
     }
+
+    pub fn movsd_xmm1_ptr_rdi_offset_u8(&mut self, value: u8) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x4f);
+        self.mem.push_u8(value);
+        offset
+    }
     
     //mov rsp -> rbp
     pub fn mov_rsp_rbp(&mut self) -> isize {
