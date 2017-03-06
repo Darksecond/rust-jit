@@ -2,40 +2,28 @@ extern crate libc;
 
 mod jit;
 
-// This should probably be sysv64
-extern "C" fn test(a: u64, b: f64, c: f64) -> u64{
-    println!("Hello, World! {:?} {:?}", b, c);
-    a+5
-}
-
-//TODO Frontend, Bytecode
+//TODO Bytecode
 //TODO Context, Variables
 fn main() {
-    let mut backend = jit::Backend::new();
+    let opcodes = vec![
+        jit::Opcode::Nop,
 
-    backend.push_rbp();
-    backend.mov_rsp_rbp();
+        jit::Opcode::LoadVar(jit::Register::Reg0, 1),
+        jit::Opcode::LoadVar(jit::Register::Reg1, 2),
+        jit::Opcode::Test, //This returns a double
+        jit::Opcode::LoadVar(jit::Register::Reg1, 0),
+        jit::Opcode::LoadConst(jit::Register::Reg0, 3.14),
+        jit::Opcode::Test,
+    ];
 
-    // RDI is first parameter
-    backend.movsd_xmm0_ptr_rdi_offset_u8(1*8);
-    backend.movsd_xmm1_ptr_rdi_offset_u8(2*8);
-
-    backend.mov_rdi_u32(14);
-    backend.call(test as isize);
-    backend.inc_rax();
-
-    backend.leave(); //Clean up RSP, RBP
-    backend.ret();
-
-    println!("Backend, {:?}", backend);
-    let jit = backend.to_mem();
-    println!("Mem, {:?}", jit);
+    let frontend = jit::Frontend::new();
+    let mem = frontend.jit(opcodes.as_slice());
 
     let vars: *mut f64 = unsafe { std::mem::transmute(libc::malloc(32*8)) };
     unsafe {*vars.offset(0) = 1.1; }
     unsafe {*vars.offset(1) = 2.2; }
     unsafe {*vars.offset(2) = 3.3; }
-    let value = jit.execute(vars);
+    let value = mem.execute(vars);
     unsafe { libc::free(std::mem::transmute(vars)) }
     println!("Value, {:?}", value);
 }

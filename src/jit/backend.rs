@@ -13,7 +13,7 @@ impl Backend {
         }
     }
 
-    // mov <u32> -> rax
+    // mov rax, <u32>
     pub fn mov_rax_u32(&mut self, value: u32) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x48);
@@ -23,7 +23,7 @@ impl Backend {
         offset
     }
 
-    // mov <u32> -> rdi
+    // rdi, <u32>
     pub fn mov_rdi_u32(&mut self, value: u32) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x48);
@@ -40,6 +40,24 @@ impl Backend {
         self.mem.push_u8(0xB8);
         self.mem.push_u64(value);
         offset
+    }
+
+    // mov <u64> -> rdi
+    pub fn mov_rdi_u64(&mut self, value: u64) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0x48);
+        self.mem.push_u8(0xBF);
+        self.mem.push_u64(value);
+        offset
+    }
+
+    pub fn mov_rax_ptr_rbp_offset_u8(&mut self, offset: i8) -> isize {
+        let opcode_offset = self.mem.offset();
+        self.mem.push_u8(0x48);
+        self.mem.push_u8(0x8b);
+        self.mem.push_u8(0x45);
+        self.mem.push_u8(offset as u8);
+        opcode_offset
     }
 
     pub fn inc_rax(&mut self) -> isize {
@@ -81,7 +99,13 @@ impl Backend {
         offset
     }
 
-    // sub <u8> from rsp
+    pub fn push_rdi(&mut self) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0x57);
+        offset
+    }
+
+    //sub rsp, <u8>
     pub fn sub_rsp_u8(&mut self, value: u8) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x48);
@@ -91,7 +115,7 @@ impl Backend {
         offset
     }
 
-    // add <u8> to rsp
+    // add rsp, <u8>
     pub fn add_rsp_u8(&mut self, value: u8) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x48);
@@ -101,8 +125,7 @@ impl Backend {
         offset
     }
     
-    //Move double from [rsp] to xmm0
-    //movsd [rsp] -> xmm0
+    //movsd xmm0, [rsp]
     pub fn movsd_xmm0_ptr_rsp(&mut self) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0xf2);
@@ -113,6 +136,18 @@ impl Backend {
         offset
     }
 
+    //movsd xmm1, [rsp]
+    pub fn movsd_xmm1_ptr_rsp(&mut self) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x0c);
+        self.mem.push_u8(0x24);
+        offset
+    }
+
+    //movsd xmm0, [rdi]
     pub fn movsd_xmm0_ptr_rdi(&mut self) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0xf2);
@@ -122,6 +157,7 @@ impl Backend {
         offset
     }
 
+    //movsd xmm0, [rdi+offset]
     pub fn movsd_xmm0_ptr_rdi_offset_u8(&mut self, value: u8) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0xf2);
@@ -132,6 +168,7 @@ impl Backend {
         offset
     }
 
+    //movsd xmm1, [rdi+offset]
     pub fn movsd_xmm1_ptr_rdi_offset_u8(&mut self, value: u8) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0xf2);
@@ -141,9 +178,55 @@ impl Backend {
         self.mem.push_u8(value);
         offset
     }
+
+    //movsd xmm0, [rax+offset]
+    pub fn movsd_xmm0_ptr_rax_offset_u8(&mut self, value: u8) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x40);
+        self.mem.push_u8(value);
+        offset
+    }
+
+    //movsd xmm1, [rax+offset]
+    pub fn movsd_xmm1_ptr_rax_offset_u8(&mut self, value: u8) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x48);
+        self.mem.push_u8(value);
+        offset
+    }
+
+    //movsd xmm1, [rsp+offset]
+    pub fn movsd_xmm1_ptr_rsp_offset_u8(&mut self, value: i8) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x4c);
+        self.mem.push_u8(0x24);
+        self.mem.push_u8(value as u8);
+        offset
+    }
+
+    //movsd xmm0, [rsp+offset]
+    pub fn movsd_xmm0_ptr_rsp_offset_u8(&mut self, value: i8) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x10);
+        self.mem.push_u8(0x44);
+        self.mem.push_u8(0x24);
+        self.mem.push_u8(value as u8);
+        offset
+    }
     
-    //mov rsp -> rbp
-    pub fn mov_rsp_rbp(&mut self) -> isize {
+    //mov rbp, rsp
+    pub fn mov_rbp_rsp(&mut self) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x48);
         self.mem.push_u8(0x89);
@@ -161,5 +244,9 @@ impl Backend {
         let mut mem = self.mem;
         mem.protect();
         mem
+    }
+
+    pub fn offset(&self) -> isize {
+        self.mem.offset()
     }
 }
