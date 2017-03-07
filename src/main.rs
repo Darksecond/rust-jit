@@ -8,11 +8,11 @@ fn main() {
     let opcodes = vec![
         jit::Opcode::Nop,
 
-        jit::Opcode::LoadVar(jit::Register::Reg0, 1),
-        jit::Opcode::LoadVar(jit::Register::Reg1, 2),
+        jit::Opcode::LoadVar(jit::Register::Param0, 1),
+        jit::Opcode::LoadVar(jit::Register::Param1, 2),
         jit::Opcode::Test, //This returns a double
-        jit::Opcode::LoadVar(jit::Register::Reg1, 0),
-        jit::Opcode::LoadConst(jit::Register::Reg0, 3.14),
+        jit::Opcode::LoadVar(jit::Register::Param1, 0),
+        jit::Opcode::LoadConst(jit::Register::Param0, 3.14),
         jit::Opcode::Test,
     ];
 

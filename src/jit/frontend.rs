@@ -41,22 +41,19 @@ impl Frontend {
                 Opcode::LoadVar(reg, var) => {
                     self.backend.mov_rax_ptr_rbp_offset_u8(-8);
                     match reg {
-                        Register::Reg0 => self.backend.movsd_xmm0_ptr_rax_offset_u8(var*8), //8 is sizeof f64
-                        Register::Reg1 => self.backend.movsd_xmm1_ptr_rax_offset_u8(var*8), //8 is sizeof f64
+                        Register::Param0 => self.backend.movsd_xmm0_ptr_rax_offset_u8(var*8), //8 is sizeof f64
+                        Register::Param1 => self.backend.movsd_xmm1_ptr_rax_offset_u8(var*8), //8 is sizeof f64
                     };
                 },
                 Opcode::LoadConst(reg, value) => {
                     unsafe { self.backend.mov_rax_u64(mem::transmute(value)); }
                     self.backend.push_rax();
                     match reg {
-                        Register::Reg0 => self.backend.movsd_xmm0_ptr_rsp(),
-                        Register::Reg1 => self.backend.movsd_xmm1_ptr_rsp(),
+                        Register::Param0 => self.backend.movsd_xmm0_ptr_rsp(),
+                        Register::Param1 => self.backend.movsd_xmm1_ptr_rsp(),
                     };
                     self.backend.add_rsp_u8(8);
                 },
-                //TODO Decide wether this should clobber xmm0..7 or not
-                //     By default it does
-                //     It *might* return a float in xmm0
                 Opcode::Test => {
                     self.backend.call(test as isize);
                 },
