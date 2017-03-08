@@ -6,20 +6,8 @@ mod jit;
 //TODO Context, Variables
 fn main() {
     let opcodes = vec![
-        jit::Opcode::Nop,
-
-        jit::Opcode::LoadVar(jit::Register::Param0, 1),
-        jit::Opcode::LoadVar(jit::Register::Param1, 2),
-        jit::Opcode::Test, //This returns a double
-        jit::Opcode::SaveVar(3, jit::Register::Param0),
-        jit::Opcode::PushVar(3),
-        jit::Opcode::SaveVar(3, jit::Register::Param1),
-        jit::Opcode::PopVar(3),
-        jit::Opcode::LoadVar(jit::Register::Param1, 0),
-        jit::Opcode::Test,
-        jit::Opcode::LoadVar(jit::Register::Param0, 3),
-        //jit::Opcode::LoadConst(jit::Register::Param0, 3.14),
-        jit::Opcode::LoadVar(jit::Register::Param1, 0),
+        jit::Opcode::LoadVar(jit::Register::Param0, 0),
+        jit::Opcode::Sin,
         jit::Opcode::Test,
     ];
 

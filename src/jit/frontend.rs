@@ -4,6 +4,11 @@ use super::opcodes::*;
 
 use std::mem;
 
+extern "C" fn sin(input: f64) -> f64 {
+    println!("sin {:?}", input);
+    f64::sin(input)
+}
+
 extern "C" fn test(b: f64, c: f64) -> f64 {
     println!("Hello, World! {:?} {:?}", b, c);
     b*c
@@ -73,6 +78,23 @@ impl Frontend {
                     self.backend.mov_rax_ptr_rbp_offset_u8(-8); //Load address of vars into rax
                     self.backend.pop_ptr_rax_offset_u8(var*8);
                     self.backend.add_rsp_u8(8);
+                },
+                Opcode::PushReg(reg) => {
+                    self.backend.sub_rsp_u8(16);
+                    match reg {
+                        Register::Param0 => self.backend.movsd_ptr_rsp_xmm0(),
+                        Register::Param1 => self.backend.movsd_ptr_rsp_xmm1(),
+                    };
+                },
+                Opcode::PopReg(reg) => {
+                    match reg {
+                        Register::Param0 => self.backend.movsd_xmm0_ptr_rsp(),
+                        Register::Param1 => self.backend.movsd_xmm1_ptr_rsp(),
+                    };
+                    self.backend.add_rsp_u8(16);
+                },
+                Opcode::Sin => {
+                    self.backend.call(sin as isize);
                 },
                 Opcode::Test => {
                     self.backend.call(test as isize);
