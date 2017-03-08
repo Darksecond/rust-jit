@@ -1,5 +1,6 @@
 
 //TODO Add Scratch0, Scratch1, etc
+//TODO Add Param2, Param3, etc
 #[derive(Debug, Clone, Copy)]
 pub enum Register {
     Param0,
@@ -20,11 +21,11 @@ pub enum Opcode {
     SaveVar(Variable, Register),
     PushVar(Variable),
     PopVar(Variable),
+    //TODO PushReg(Register),
+    //TODO PopReg(Register),
     //TODO Add(Register, Register),
     //TODO Sub(Register, Register),
     //TODO Mul(Register, Register),
     //TODO Div(Register, Register),
-    //TODO PushReg(Register),
-    //TODO PopReg(Register),
     Test, //TODO REMOVE ME
 }
