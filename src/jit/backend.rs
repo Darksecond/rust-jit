@@ -5,6 +5,7 @@ pub struct Backend {
     mem: Memory
 }
 
+//TODO Merge similar instructions
 #[cfg(target_arch="x86_64")]
 impl Backend {
     pub fn new() -> Backend {
@@ -105,6 +106,14 @@ impl Backend {
         offset
     }
 
+    pub fn pop_ptr_rax_offset_u8(&mut self, offset: u8) -> isize {
+        let opcode_offset = self.mem.offset();
+        self.mem.push_u8(0x8f);
+        self.mem.push_u8(0x40);
+        self.mem.push_u8(offset as u8);
+        opcode_offset
+    }
+
     //sub rsp, <u8>
     pub fn sub_rsp_u8(&mut self, value: u8) -> isize {
         let offset = self.mem.offset();
@@ -122,6 +131,28 @@ impl Backend {
         self.mem.push_u8(0x83);
         self.mem.push_u8(0xc4);
         self.mem.push_u8(value);
+        offset
+    }
+
+    //movsd [rsp], xmm0
+    pub fn movsd_ptr_rsp_xmm0(&mut self) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x11);
+        self.mem.push_u8(0x04);
+        self.mem.push_u8(0x24);
+        offset
+    }
+
+    //movsd [rsp], xmm1
+    pub fn movsd_ptr_rsp_xmm1(&mut self) -> isize {
+        let offset = self.mem.offset();
+        self.mem.push_u8(0xf2);
+        self.mem.push_u8(0x0f);
+        self.mem.push_u8(0x11);
+        self.mem.push_u8(0x0c);
+        self.mem.push_u8(0x24);
         offset
     }
     

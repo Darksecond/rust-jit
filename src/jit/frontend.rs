@@ -25,6 +25,7 @@ impl Frontend {
 
     //RAX is being treated as a scratch register
     //RDI is being treated as a scratch register
+    //TODO var*8 might (very likely) be more than u8 -> Move to u16/u32
     pub fn jit(mut self, opcodes: &[Opcode]) -> Memory {
         self.backend.push_rbp();
         self.backend.mov_rbp_rsp();
@@ -53,6 +54,15 @@ impl Frontend {
                         Register::Param1 => self.backend.movsd_xmm1_ptr_rsp(),
                     };
                     self.backend.add_rsp_u8(8);
+                },
+                Opcode::SaveVar(var, reg) => {
+                    self.backend.mov_rax_ptr_rbp_offset_u8(-8); //Load address of vars into rax
+                    self.backend.sub_rsp_u8(8); // Make space on stack
+                    match reg {
+                        Register::Param0 => self.backend.movsd_ptr_rsp_xmm0(),
+                        Register::Param1 => self.backend.movsd_ptr_rsp_xmm1(),
+                    };
+                    self.backend.pop_ptr_rax_offset_u8(var*8);
                 },
                 Opcode::Test => {
                     self.backend.call(test as isize);

@@ -6,19 +6,23 @@ pub enum Register {
     Param1,
 }
 
+pub type Variable = u8;
+
 //TODO Rename enum or file to Bytecode
-#[derive(Debug, Clone, Copy)]
 // Order is always dst, src
+#[derive(Debug, Clone, Copy)]
 pub enum Opcode {
     Nop,
-    LoadVar(Register, u8), //reg, var
+    LoadVar(Register, Variable),
     LoadConst(Register, f64),
-    //TODO SaveVar(var: u8, Register)
+    SaveVar(Variable, Register),
     //TODO Add(Register, Register),
     //TODO Sub(Register, Register),
     //TODO Mul(Register, Register),
     //TODO Div(Register, Register),
-    //TODO PushVar
-    //TODO PopVar
+    //TODO PushVar(Variable),
+    //TODO PopVar(Variable),
+    //TODO PushReg(Register),
+    //TODO PopReg(Register),
     Test, //TODO REMOVE ME
 }
