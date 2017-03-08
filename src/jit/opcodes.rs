@@ -6,6 +6,8 @@ pub enum Register {
     Param1,
 }
 
+//TODO Should this be a enum or struct?
+//TODO Should this be a u8, u16 or u32?
 pub type Variable = u8;
 
 //TODO Rename enum or file to Bytecode
@@ -16,12 +18,12 @@ pub enum Opcode {
     LoadVar(Register, Variable),
     LoadConst(Register, f64),
     SaveVar(Variable, Register),
+    PushVar(Variable),
+    PopVar(Variable),
     //TODO Add(Register, Register),
     //TODO Sub(Register, Register),
     //TODO Mul(Register, Register),
     //TODO Div(Register, Register),
-    //TODO PushVar(Variable),
-    //TODO PopVar(Variable),
     //TODO PushReg(Register),
     //TODO PopReg(Register),
     Test, //TODO REMOVE ME

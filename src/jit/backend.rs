@@ -100,6 +100,14 @@ impl Backend {
         offset
     }
 
+    pub fn push_ptr_rax_offset_u8(&mut self, offset: u8) -> isize {
+        let opcode_offset = self.mem.offset();
+        self.mem.push_u8(0xff);
+        self.mem.push_u8(0x70);
+        self.mem.push_u8(offset);
+        opcode_offset
+    }
+
     pub fn push_rdi(&mut self) -> isize {
         let offset = self.mem.offset();
         self.mem.push_u8(0x57);

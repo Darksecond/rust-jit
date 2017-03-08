@@ -64,6 +64,16 @@ impl Frontend {
                     };
                     self.backend.pop_ptr_rax_offset_u8(var*8);
                 },
+                Opcode::PushVar(var) => {
+                    self.backend.mov_rax_ptr_rbp_offset_u8(-8); //Load address of vars into rax
+                    self.backend.sub_rsp_u8(8); //Align stack
+                    self.backend.push_ptr_rax_offset_u8(var*8);
+                },
+                Opcode::PopVar(var) => {
+                    self.backend.mov_rax_ptr_rbp_offset_u8(-8); //Load address of vars into rax
+                    self.backend.pop_ptr_rax_offset_u8(var*8);
+                    self.backend.add_rsp_u8(8);
+                },
                 Opcode::Test => {
                     self.backend.call(test as isize);
                 },

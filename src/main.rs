@@ -12,6 +12,9 @@ fn main() {
         jit::Opcode::LoadVar(jit::Register::Param1, 2),
         jit::Opcode::Test, //This returns a double
         jit::Opcode::SaveVar(3, jit::Register::Param0),
+        jit::Opcode::PushVar(3),
+        jit::Opcode::SaveVar(3, jit::Register::Param1),
+        jit::Opcode::PopVar(3),
         jit::Opcode::LoadVar(jit::Register::Param1, 0),
         jit::Opcode::Test,
         jit::Opcode::LoadVar(jit::Register::Param0, 3),
