@@ -28,7 +28,7 @@ pub enum Opcode {
     PopVar(Variable),
     PushReg(Register),
     PopReg(Register),
-    Sin, //This will input and output to/from Param0
+    Sin, //CI0O0 - This will input and output to/from Param0 and clobber all other registers
     //TODO Add(Register, Register),
     //TODO Sub(Register, Register),
     //TODO Mul(Register, Register),

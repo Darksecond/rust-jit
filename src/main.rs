@@ -4,6 +4,7 @@ mod jit;
 
 //TODO Bytecode
 //TODO Context, Variables
+//TODO Add JIT checking (uninitialized register usage, etc)
 fn main() {
     let opcodes = vec![
         jit::Opcode::LoadVar(jit::Register::Param0, 0),
